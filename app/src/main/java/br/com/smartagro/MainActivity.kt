@@ -22,6 +22,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun onClickClima(view: View) {
+        val intent = Intent(this, PrevisaoTempo::class.java)
+        startActivity(intent)
+    }
+
     // TODO: melhorar esse trecho de código para evitar repetição para cada activity
     protected fun setupBottomNavigation(bottomNavigationView: BottomNavigationView,) {
         bottomNavigationView.setOnItemSelectedListener { item ->
