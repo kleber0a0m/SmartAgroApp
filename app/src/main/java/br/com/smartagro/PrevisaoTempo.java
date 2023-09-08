@@ -56,7 +56,7 @@ public class PrevisaoTempo extends AppCompatActivity {
         // EditText cidade = findViewById(R.id.editCidade);
         //TODO: Remover o id fixo da url
         try {
-            String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/2700/previsao.xml";
+            String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/2701/previsao.xml";
             new Tarefa().execute(url);
         }catch (Exception e){
             Log.e("Erro", e.getMessage());
@@ -232,18 +232,27 @@ public class PrevisaoTempo extends AppCompatActivity {
     }
 
     public static String obterDia(String data) {
+        if(data.equals("null") || data.isEmpty()){
+            return "";
+        }
         LocalDate localDate = LocalDate.parse(data);
         int dia = localDate.getDayOfMonth();
         return String.valueOf(dia);
     }
 
     public static String obterMes(String data) {
+        if(data.equals("null") || data.isEmpty()){
+            return "";
+        }
         LocalDate localDate = LocalDate.parse(data);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM", new Locale("pt", "BR"));
         return localDate.format(formatter);
     }
 
     public static String obterDiaMes(String data) {
+        if(data.equals("null") || data.isEmpty()){
+            return "";
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
 
@@ -267,6 +276,9 @@ public class PrevisaoTempo extends AppCompatActivity {
     }
 
     public static String obterDiaDaSemana(String data) {
+        if(data.equals("null") || data.isEmpty()){
+            return "";
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
 

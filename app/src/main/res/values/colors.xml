@@ -6,4 +6,6 @@
     <color name="verde_fundo">#DDF0C8</color>
     <color name="verde">#4C5F15</color>
     <color name="verde_escuro">#34410D</color>
+    <color name="transparente">#00000000</color>
+    <color name="amarelo">#FF9900</color>
 </resources>
