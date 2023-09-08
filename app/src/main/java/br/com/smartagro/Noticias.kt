@@ -1,5 +1,6 @@
 package br.com.smartagro
 
+import android.content.Intent
 import br.com.smartagro.noticias.cafepoint.RssParserCafePoint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import br.com.smartagro.noticias.cafepoint.NewsAdapterCafePoint
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class Noticias : AppCompatActivity() {
@@ -21,18 +23,33 @@ class Noticias : AppCompatActivity() {
     private lateinit var newsAdapterCCCMG: NewsAdapterCCCMG
     private lateinit var rssParserCafePoint: RssParserCafePoint
     private lateinit var rssParserCCCMG: RssParserCCCMG
+    private var noticiasCarregadas = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNoticiasBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupRssFeeds()
+        setupChipGroupRss()
+        setupBottomNavigation(binding.bottomNavigation)
+
+        // TODO: melhorar esse trecho de código para evitar repetição para cada activity
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        setupBottomNavigation(bottomNavigationView)
+        bottomNavigationView.menu.findItem(R.id.nav_news).isChecked = true
+
+        binding.imgVoltar.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun setupRssFeeds() {
         rssParserCafePoint = RssParserCafePoint("https://www.cafepoint.com.br/rss/")
         rssParserCCCMG = RssParserCCCMG("https://cccmg.com.br/category/noticias/feed/")
 
         showLoadingIndicator(true)
-
-        var noticiasCarregadas = false;
 
         MainScope().launch(Dispatchers.Main) {
             try {
@@ -52,22 +69,24 @@ class Noticias : AppCompatActivity() {
                 binding.chipGroupRss.check(R.id.chipCafePoint)
             }
         }
+    }
 
+    private fun setupChipGroupRss() {
         binding.chipGroupRss.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.chipCafePoint -> {
-                    if(noticiasCarregadas){
+                    if (noticiasCarregadas) {
                         binding.recyclerView.adapter = newsAdapterCafePoint
                         newsAdapterCafePoint.notifyDataSetChanged()
-                    }else {
+                    } else {
                         Toast.makeText(this@Noticias, "Carregando notícias...", Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.chipCCCMG -> {
-                    if(noticiasCarregadas){
+                    if (noticiasCarregadas) {
                         binding.recyclerView.adapter = newsAdapterCCCMG
                         newsAdapterCCCMG.notifyDataSetChanged()
-                    }else {
+                    } else {
                         Toast.makeText(this@Noticias, "Carregando notícias...", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -80,6 +99,30 @@ class Noticias : AppCompatActivity() {
             binding.progressBar.visibility = View.VISIBLE
         } else {
             binding.progressBar.visibility = View.GONE
+        }
+    }
+
+    // TODO: melhorar esse trecho de código para evitar repetição para cada activity
+    protected fun setupBottomNavigation(bottomNavigationView: BottomNavigationView,) {
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_news -> {
+                    val intent = Intent(this, Noticias::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_settings -> {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
         }
     }
 }
