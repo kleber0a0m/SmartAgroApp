@@ -1,16 +1,25 @@
 package br.com.smartagro;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -23,49 +32,84 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class PrevisaoTempo extends AppCompatActivity {
+public class PrevisaoTempoActivity extends AppCompatActivity {
 
     private List<Previsao> previsoesList = new ArrayList<>();
-    private  Cidade cidadeSelecionada;
+    private  String cidadeId;
+    private  String cidadeNomeUF;
     private int indexAtual = 0;
     ImageView imgTempo;
+
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_previsao_tempo);
-        Intent intent = getIntent();
-        //TODO: Verificar
-//        cidadeSelecionada = (Cidade) intent.getSerializableExtra("cidade");
 
-//        if(cidadeSelecionada.isUsarLocalizacao()){
-//            buscarPrevisaoLocalizacao();
-//            TextView lblCidade = findViewById(R.id.lblCidade);
-//            lblCidade.setText(cidadeSelecionada.getLatitude() + "  " + cidadeSelecionada.getLongitude());
-//
-//        }
-//        else{
-            buscarPrevisao();
-            TextView lblCidade = findViewById(R.id.lblCidade);
-//           lblCidade.setText(cidadeSelecionada.getNome() + " - " + cidadeSelecionada.getUf());
-           lblCidade.setText("Nome cidade");
-//        }
-    }
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-    public void buscarPrevisao() {
-        // EditText cidade = findViewById(R.id.editCidade);
-        //TODO: Remover o id fixo da url
-        try {
-            String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/2701/previsao.xml";
-            new Tarefa().execute(url);
-        }catch (Exception e){
-            Log.e("Erro", e.getMessage());
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            // TODO: melhorar esse trecho de código para evitar repetição para cada activity
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                int itemId = item.getItemId();
+
+                final int NAV_HOME = R.id.nav_home;
+                final int NAV_NEWS = R.id.nav_news;
+                final int NAV_CLIMA = R.id.nav_clima;
+
+                if (itemId == NAV_HOME) {
+                    startActivity(new Intent(PrevisaoTempoActivity.this, MainActivity.class));
+                    return true;
+                } else if (itemId == NAV_NEWS) {
+                    startActivity(new Intent(PrevisaoTempoActivity.this, Noticias.class));
+                    return true;
+                } else if (itemId == NAV_CLIMA) {
+                    return true;
+                }
+
+                return false;
+            }
+        });
+        bottomNavigationView.getMenu().findItem(R.id.nav_clima).setChecked(true);
+
+
+
+        TextView lblCidade = findViewById(R.id.lblCidade);
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+
+            // Inicializar o Firestore
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // Refira a coleção de cidades do usuário atual
+            CollectionReference cidadesRef = db.collection("usuarios").document(userId).collection("cidades");
+
+            // Consultar a primeira cidade da coleção
+            cidadesRef.limit(1).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        this.cidadeNomeUF = document.getString("nome")+ " - " + document.getString("uf");
+                        this.cidadeId = document.getString("id");
+
+                        lblCidade.setText(cidadeNomeUF);
+                        buscarPrevisao();
+                        break; // Para apenas na primeira cidade encontrada
+                    }
+                } else {
+                    Log.d("Cidade", "Falha ao recuperar os dados da cidade", task.getException());
+                }
+            });
         }
     }
 
-    public void buscarPrevisaoLocalizacao() {
+
+    public void buscarPrevisao() {
         try {
-            String url = cidadeSelecionada.getUrlLocalizacao();
+            String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/" + cidadeId + "/previsao.xml";
             new Tarefa().execute(url);
         }catch (Exception e){
             Log.e("Erro", e.getMessage());
@@ -85,7 +129,7 @@ public class PrevisaoTempo extends AppCompatActivity {
             Date dataFormatada = formatoEntrada.parse(data);
             String dataFormatadaString = formatoSaida.format(dataFormatada);
 
-            intent.putExtra(Intent.EXTRA_TEXT, "🌤️ Previsão do tempo para: \n" + cidadeSelecionada.getNome() + " - " + cidadeSelecionada.getUf() + "\n\n" +
+            intent.putExtra(Intent.EXTRA_TEXT, "🌤️ Previsão do tempo para: \n" + cidadeNomeUF + " - " + "\n\n" +
                     "📅 Data: " + dataFormatadaString + "\n" +
                     "⛅ Tempo: " + SiglaDescricao.converterSiglaParaDescricao(previsoesList.get(indexAtual).getTempo()) + "\n" +
                     "🌡️ Temperatura:  " + "Max: " + previsoesList.get(indexAtual).getMaxima() + "°C" + " - Min: " + previsoesList.get(indexAtual).getMinima() + "°C\n" +
@@ -94,6 +138,22 @@ public class PrevisaoTempo extends AppCompatActivity {
             startActivity(Intent.createChooser(intent, "Compartilhar"));
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Nullable
+    public static CharSequence converterData(@Nullable String dia) {
+        try {
+            SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat formatoSaida = new SimpleDateFormat("dd/MM", Locale.getDefault());
+
+            Date data = formatoEntrada.parse(dia);
+            String dataFormatada = formatoSaida.format(data);
+
+            return dataFormatada;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 
@@ -107,13 +167,6 @@ public class PrevisaoTempo extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            //TODO: Verificar
-//            if(cidadeSelecionada.isUsarLocalizacao()){
-//                List<Cidade> cidades;
-//                cidades = ConsumirXML.getCidade(s);
-//                TextView lblCidade = findViewById(R.id.lblCidade);
-//                lblCidade.setText(cidades.get(0).getNome() + " - " + cidades.get(0).getUf());
-//            }
             previsoesList = ConsumirXML.getPrevisao(s);
             TextView txtDia = findViewById(R.id.txtDia);
             TextView txtDiaMes = findViewById(R.id.txtDiaMes);
@@ -138,6 +191,8 @@ public class PrevisaoTempo extends AppCompatActivity {
             AtualizarCards();
         }
     }
+
+
 
     public void AtualizarCards() {
         // Card 01
@@ -233,7 +288,7 @@ public class PrevisaoTempo extends AppCompatActivity {
 
     public static String obterDia(String data) {
         if(data.equals("null") || data.isEmpty()){
-            return "";
+            return "-";
         }
         LocalDate localDate = LocalDate.parse(data);
         int dia = localDate.getDayOfMonth();
@@ -242,7 +297,7 @@ public class PrevisaoTempo extends AppCompatActivity {
 
     public static String obterMes(String data) {
         if(data.equals("null") || data.isEmpty()){
-            return "";
+            return "-";
         }
         LocalDate localDate = LocalDate.parse(data);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM", new Locale("pt", "BR"));
@@ -251,7 +306,7 @@ public class PrevisaoTempo extends AppCompatActivity {
 
     public static String obterDiaMes(String data) {
         if(data.equals("null") || data.isEmpty()){
-            return "";
+            return "-";
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
@@ -271,13 +326,13 @@ public class PrevisaoTempo extends AppCompatActivity {
             return String.format("%02d %s", dia, mesFormatado);
         } catch (ParseException e) {
             e.printStackTrace();
-            return "";
+            return "-";
         }
     }
 
     public static String obterDiaDaSemana(String data) {
         if(data.equals("null") || data.isEmpty()){
-            return "";
+            return "-";
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
@@ -294,12 +349,13 @@ public class PrevisaoTempo extends AppCompatActivity {
             return diasDaSemana[diaDaSemana].toUpperCase();
         } catch (ParseException e) {
             e.printStackTrace();
-            return "";
+            return "-";
         }
     }
 
     public static String obterClassificacaoUV(String indiceUV) {
         Double indiceUVDouble = Double.parseDouble(indiceUV);
+
         if (indiceUVDouble < 3.0) {
             return "Baixo ("+indiceUV+")";
         } else if (indiceUVDouble < 6.0) {
@@ -308,9 +364,10 @@ public class PrevisaoTempo extends AppCompatActivity {
             return "Alto ("+indiceUV+")";
         } else if (indiceUVDouble < 11.0) {
             return "Muito Alto ("+indiceUV+")";
-        } else {
+        } else if (indiceUVDouble >= 11.0) {
             return "Extremo ("+indiceUV+")";
         }
+        return "-";
     }
 
     public void alterarIndex0(View view) {
@@ -344,15 +401,6 @@ public class PrevisaoTempo extends AppCompatActivity {
     }
 
     public void voltar(View view) {
-        cidadeSelecionada.setUsarLocalizacao(false);
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("cidadeId");
-        editor.remove("cidadeNome");
-        editor.remove("cidadeUf");
-        editor.commit();
-        //Intent intent = new Intent(this, BuscaCidade.class);
-        //startActivity(intent);
         //TODO: Arrumar botão
     }
 

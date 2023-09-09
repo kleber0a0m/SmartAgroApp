@@ -10,7 +10,7 @@
         android:title="Notícias" />
 
     <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/settings_white"
-        android:title="Configurações" />
+        android:id="@+id/nav_clima"
+        android:icon="@drawable/baseline_cloud_24"
+        android:title="Clima"/>
 </menu>

@@ -103,7 +103,7 @@ class Noticias : AppCompatActivity() {
     }
 
     // TODO: melhorar esse trecho de código para evitar repetição para cada activity
-    protected fun setupBottomNavigation(bottomNavigationView: BottomNavigationView,) {
+    protected fun setupBottomNavigation(bottomNavigationView: BottomNavigationView) {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
@@ -111,16 +111,19 @@ class Noticias : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+
                 R.id.nav_news -> {
                     val intent = Intent(this, Noticias::class.java)
                     startActivity(intent)
                     true
                 }
-                R.id.nav_settings -> {
-                    val intent = Intent(this, MainActivity::class.java)
+
+                R.id.nav_clima -> {
+                    val intent = Intent(this, PrevisaoTempoActivity::class.java)
                     startActivity(intent)
                     true
                 }
+
                 else -> false
             }
         }
