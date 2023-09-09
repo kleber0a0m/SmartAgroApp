@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/quicksand_bold"
-                android:text="Chuva"
+                android:text="Tempo"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imgTempoHome"
@@ -145,6 +145,8 @@
                 android:id="@+id/imgChuva"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_marginStart="-20dp"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/txtClima"
                 app:layout_constraintStart_toEndOf="@+id/txtClima"
                 app:layout_constraintTop_toBottomOf="@+id/txtPrevisao"
@@ -159,6 +161,7 @@
                 android:text="10%"
                 android:textColor="@color/white"
                 android:textSize="24sp"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/imgChuva"
                 app:layout_constraintStart_toEndOf="@+id/imgChuva"
                 app:layout_constraintTop_toTopOf="@+id/imgChuva" />
@@ -167,9 +170,9 @@
                 android:id="@+id/imgTempMax"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="-230dp"
                 app:layout_constraintBottom_toBottomOf="@+id/txtClima"
-                app:layout_constraintStart_toEndOf="@+id/txtChuva"
+                app:layout_constraintStart_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtPrevisao"
                 app:srcCompat="@drawable/baseline_arrow_upward_24" />
 
@@ -179,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/quicksand_bold"
-                android:text="27°"
+                android:text="000°"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imgChuva"
@@ -202,7 +205,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/quicksand_bold"
-                android:text="16°"
+                android:text="000°"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imgChuva"
@@ -215,7 +218,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/quicksand_bold"
-                android:text="31/12"
+                android:text="00/00"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/txtTempMin"
@@ -238,7 +241,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/quicksand_bold"
-                android:text="Machado - MG"
+                android:text="Cidade - UF"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/imgCaledario"
@@ -253,6 +256,16 @@
                 app:layout_constraintEnd_toStartOf="@+id/txtCidade"
                 app:layout_constraintTop_toTopOf="@+id/txtData"
                 app:srcCompat="@drawable/baseline_location_on_24_amarelo" />
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/imgFundoClima"
+                app:srcCompat="@drawable/baseline_touch_app_24" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -281,11 +294,11 @@
                 android:src="@drawable/fundo_dolar" />
 
             <TextView
-                android:id="@+id/txtClima3"
+                android:id="@+id/txtDolar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/quicksand_bold"
-                android:text="4,98"
+                android:text="0,00"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imgFundoDolar"
@@ -294,7 +307,7 @@
                 app:layout_constraintTop_toTopOf="@+id/imgFundoDolar" />
 
             <TextView
-                android:id="@+id/txtPrevisao3"
+                android:id="@+id/txtDolarEsquerda"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -308,7 +321,7 @@
                 app:layout_constraintVertical_bias="0.516" />
 
             <TextView
-                android:id="@+id/txtPrevisao4"
+                android:id="@+id/txtDolarDireita"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -331,7 +344,7 @@
                 android:textColor="@color/ferrugem"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/txtPrevisao4"
+                app:layout_constraintEnd_toStartOf="@+id/txtDolarDireita"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.516" />
 
@@ -380,7 +393,7 @@
                 app:layout_constraintTop_toTopOf="@+id/imgFundoCotacao" />
 
             <TextView
-                android:id="@+id/txtNome1"
+                android:id="@+id/txtNomeB3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -393,25 +406,25 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/txtValor1"
+                android:id="@+id/txtValorB3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="@font/quicksand"
-                android:text="$183,50"
+                android:text="$000,00"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toTopOf="@+id/txtNome2"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
-                android:id="@+id/txtValor2"
+                android:id="@+id/txtValorNYSE"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/quicksand"
-                android:text="$154,30"
+                android:text="$000,00"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/txtNome2"
@@ -419,13 +432,13 @@
                 app:layout_constraintTop_toTopOf="@+id/txtNome2" />
 
             <TextView
-                android:id="@+id/txtValor3"
+                android:id="@+id/txtValorCEPEA"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/quicksand"
-                android:text="R$816,58"
+                android:text="R$000,00"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -441,7 +454,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/txtNome2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtNome1" />
+                app:layout_constraintTop_toBottomOf="@+id/txtNomeB3" />
 
             <TextView
                 android:id="@+id/txtNome2"
@@ -463,13 +476,13 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@color/amarelo"
-                app:layout_constraintBottom_toTopOf="@+id/txtNome3"
+                app:layout_constraintBottom_toTopOf="@+id/txtNomeCEPEA"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtNome2" />
 
             <TextView
-                android:id="@+id/txtNome3"
+                android:id="@+id/txtNomeCEPEA"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
