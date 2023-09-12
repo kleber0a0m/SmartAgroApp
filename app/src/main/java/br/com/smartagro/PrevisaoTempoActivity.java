@@ -109,7 +109,8 @@ public class PrevisaoTempoActivity extends AppCompatActivity {
 
     public void buscarPrevisao() {
         try {
-            String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/" + cidadeId + "/previsao.xml";
+            // String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/" + cidadeId + "/previsao.xml"; TODO: voltar essa URL quando a API do CPTEC voltar a funcionar
+            String url = "https://gist.githubusercontent.com/kleber0a0m0/738376b6d7616702448ace751425e05a/raw/2cec2d51ea07cfea40adb576f0460e397bf85d58/inpe.xml";
             new Tarefa().execute(url);
         }catch (Exception e){
             Log.e("Erro", e.getMessage());

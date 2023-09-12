@@ -129,7 +129,8 @@ class MainActivity : AppCompatActivity()  {
 
     fun previsaoDoDia(){
         try {
-            val url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/$cidadeId/previsao.xml"
+            // val url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/$cidadeId/previsao.xml" TODO: voltar essa URL quando a API do CPTEC voltar a funcionar
+            val url = "https://gist.githubusercontent.com/kleber0a0m0/738376b6d7616702448ace751425e05a/raw/2cec2d51ea07cfea40adb576f0460e397bf85d58/inpe.xml"
             TarefaPrevisao().execute(url)
         } catch (e: Exception) {
             e.message?.let { Log.e("Erro", it) }
