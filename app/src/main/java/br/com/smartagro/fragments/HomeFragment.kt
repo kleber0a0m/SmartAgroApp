@@ -1,11 +1,21 @@
-package br.com.smartagro
+package br.com.smartagro.fragments
 
+import ClimaFragment
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import br.com.smartagro.Conexao
+import br.com.smartagro.ConsumirXML
+import br.com.smartagro.LoginActivity
+import br.com.smartagro.Previsao
+import br.com.smartagro.PrincipalActivity
+import br.com.smartagro.R
+import br.com.smartagro.SiglaDescricao
 import br.com.smartagro.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -19,70 +29,30 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
-class MainActivity : AppCompatActivity()  {
+class HomeFragment : Fragment() {
 
     private lateinit var binding: ActivityMainBinding
     private var cidadeId: String? = null
     private var cidadeNomeUF: String? = null
     private val previsoesList = ArrayList<Previsao>()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = ActivityMainBinding.inflate(inflater, container, false)
         val view = binding.root
-        setContentView(view)
 
         val nome = extrairPrimeiroNome(FirebaseAuth.getInstance().currentUser?.displayName)
         binding.txtBemVindo.text = "Olá, $nome!"
-
-
-        // TODO: melhorar esse trecho de código para evitar repetição para cada activity
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        setupBottomNavigation(bottomNavigationView)
-        bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
 
         previsao()
         buscarPrecoDolar()
         buscarPrecoCafeB3()
         buscarPrecoCafeCEPEA()
         buscarPrecoCafeNYSE()
-    }
 
-    fun onClickNoticias(view: View) {
-        val intent = Intent(this, Noticias::class.java)
-        startActivity(intent)
-    }
-
-    fun onClickClima(view: View) {
-        val intent = Intent(this, PrevisaoTempoActivity::class.java)
-        startActivity(intent)
-    }
-
-    // TODO: melhorar esse trecho de código para evitar repetição para cada activity
-    protected fun setupBottomNavigation(bottomNavigationView: BottomNavigationView) {
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.nav_news -> {
-                    val intent = Intent(this, Noticias::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.nav_clima -> {
-                    val intent = Intent(this, PrevisaoTempoActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                else -> false
-            }
-        }
+        return view
     }
 
     fun extrairPrimeiroNome(nomeCompleto: String?): String {
@@ -98,7 +68,6 @@ class MainActivity : AppCompatActivity()  {
     }
 
     //Previsão do tempo
-
     fun previsao(){
         val currentUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
@@ -129,8 +98,8 @@ class MainActivity : AppCompatActivity()  {
 
     fun previsaoDoDia(){
         try {
-            // val url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/$cidadeId/previsao.xml" TODO: voltar essa URL quando a API do CPTEC voltar a funcionar
-            val url = "https://gist.githubusercontent.com/kleber0a0m0/738376b6d7616702448ace751425e05a/raw/2cec2d51ea07cfea40adb576f0460e397bf85d58/inpe.xml"
+            val url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/$cidadeId/previsao.xml"
+//          val url = "https://gist.githubusercontent.com/kleber0a0m0/738376b6d7616702448ace751425e05a/raw/2cec2d51ea07cfea40adb576f0460e397bf85d58/inpe.xml"
             TarefaPrevisao().execute(url)
         } catch (e: Exception) {
             e.message?.let { Log.e("Erro", it) }
@@ -145,16 +114,17 @@ class MainActivity : AppCompatActivity()  {
         }
 
         override fun onPostExecute(s: String) {
-            previsoesList.clear()
-            previsoesList.addAll(ConsumirXML.getPrevisao(s))
-            binding.txtTempMax.text = previsoesList[0].maxima + "°C"
-            binding.txtTempMin.text = previsoesList[0].minima + "°C"
-            binding.txtData.text = converterData(previsoesList[0].dia)
-            binding.txtPrevisao.text = SiglaDescricao.converterSiglaParaDescricao(previsoesList[0].tempo)
+            if (isAdded) {
+                previsoesList.clear()
+                previsoesList.addAll(ConsumirXML.getPrevisao(s))
+                binding.txtTempMax.text = previsoesList[0].maxima + "°C"
+                binding.txtTempMin.text = previsoesList[0].minima + "°C"
+                binding.txtData.text = converterData(previsoesList[0].dia)
+                binding.txtPrevisao.text = SiglaDescricao.converterSiglaParaDescricao(previsoesList[0].tempo)
 
-            val resourceIdTempoCard = resources.getIdentifier(previsoesList[0].tempo, "drawable", packageName)
-            binding.imgTempoHome.setImageResource(resourceIdTempoCard)
-
+                val resourceIdTempoCard = resources.getIdentifier(previsoesList[0].tempo, "drawable", context?.packageName)
+                binding.imgTempoHome.setImageResource(resourceIdTempoCard)
+            }
         }
     }
 
@@ -303,5 +273,3 @@ class MainActivity : AppCompatActivity()  {
     }
 
 }
-
-

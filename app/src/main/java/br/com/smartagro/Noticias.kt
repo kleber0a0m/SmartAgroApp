@@ -38,11 +38,6 @@ class Noticias : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         setupBottomNavigation(bottomNavigationView)
         bottomNavigationView.menu.findItem(R.id.nav_news).isChecked = true
-
-        binding.imgVoltar.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun setupRssFeeds() {
@@ -107,7 +102,7 @@ class Noticias : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intent = Intent(this, Noticias::class.java)
                     startActivity(intent)
                     true
                 }

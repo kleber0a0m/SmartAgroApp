@@ -60,7 +60,7 @@ public class PrevisaoTempoActivity extends AppCompatActivity {
                 final int NAV_CLIMA = R.id.nav_clima;
 
                 if (itemId == NAV_HOME) {
-                    startActivity(new Intent(PrevisaoTempoActivity.this, MainActivity.class));
+                    startActivity(new Intent(PrevisaoTempoActivity.this, Noticias.class));
                     return true;
                 } else if (itemId == NAV_NEWS) {
                     startActivity(new Intent(PrevisaoTempoActivity.this, Noticias.class));
@@ -109,8 +109,8 @@ public class PrevisaoTempoActivity extends AppCompatActivity {
 
     public void buscarPrevisao() {
         try {
-            // String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/" + cidadeId + "/previsao.xml"; TODO: voltar essa URL quando a API do CPTEC voltar a funcionar
-            String url = "https://gist.githubusercontent.com/kleber0a0m0/738376b6d7616702448ace751425e05a/raw/2cec2d51ea07cfea40adb576f0460e397bf85d58/inpe.xml";
+            String url = "http://servicos.cptec.inpe.br/XML/cidade/7dias/" + cidadeId + "/previsao.xml";
+            //String url = "https://gist.githubusercontent.com/kleber0a0m0/738376b6d7616702448ace751425e05a/raw/2cec2d51ea07cfea40adb576f0460e397bf85d58/inpe.xml";
             new Tarefa().execute(url);
         }catch (Exception e){
             Log.e("Erro", e.getMessage());
@@ -391,10 +391,10 @@ public class PrevisaoTempoActivity extends AppCompatActivity {
         buscarPrevisao();
     }
 
-    public void alterarIndex4(View view) {
-        indexAtual = 4;
-        buscarPrevisao();
-    }
+//    public void alterarIndex4(View view) {
+//        indexAtual = 4;
+//        buscarPrevisao();
+//    }
 
     public void alterarIndex5(View view) {
         indexAtual = 5;

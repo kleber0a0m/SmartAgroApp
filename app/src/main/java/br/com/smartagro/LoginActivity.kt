@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
                 if (pass.length >= 6) {
                     firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            val intent = Intent(this, MainActivity::class.java)
+                            val intent = Intent(this, PrincipalActivity::class.java)
                             startActivity(intent)
                         } else {
                             val errorText = when (task.exception) {
