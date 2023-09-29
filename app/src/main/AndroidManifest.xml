@@ -21,12 +21,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".Noticias"
-            android:exported="true" />
-        <activity
-            android:name=".PrevisaoTempoActivity"
-            android:exported="true" />
-        <activity
             android:name=".LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">

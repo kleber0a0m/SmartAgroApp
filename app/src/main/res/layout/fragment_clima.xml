@@ -8,8 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        tools:context=".PrevisaoTempoActivity">
+        android:background="@color/white">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineHorizontal1"
@@ -148,7 +147,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:scrollbarSize="34dp"
-            app:layout_constraintGuide_percent="0.5" />
+            app:layout_constraintGuide_percent="0.54" />
 
         <TextView
             android:id="@+id/txtProximosDias"
@@ -198,8 +197,6 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
-
-                        <!-- Adicione seus elementos de layout aqui -->
 
                         <ImageView
                             android:id="@+id/imgTempoCard_01"
@@ -399,8 +396,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <!-- Adicione seus elementos de layout aqui -->
-
                         <ImageView
                             android:id="@+id/imgTempoCard_03"
                             android:layout_width="38dp"
@@ -493,15 +488,12 @@
                     android:layout_width="190dp"
                     android:layout_height="190dp"
                     android:background="@color/verde_fundo"
-                    android:onClick="alterarIndex3"
                     app:cardBackgroundColor="@color/verde_fundo"
                     app:cardCornerRadius="24dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
-
-                        <!-- Adicione seus elementos de layout aqui -->
 
                         <ImageView
                             android:id="@+id/imgTempoCard_04"
@@ -602,8 +594,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <!-- Adicione seus elementos de layout aqui -->
-
                         <ImageView
                             android:id="@+id/imgTempoCard_05"
                             android:layout_width="38dp"
@@ -703,8 +693,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <!-- Adicione seus elementos de layout aqui -->
-
                         <ImageView
                             android:id="@+id/imgTempoCard_06"
                             android:layout_width="38dp"
@@ -801,7 +789,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:onClick="voltar"
             android:text="Cidade - UF"
             android:textColor="@color/verde"
             android:textColorHighlight="#FFFFFF"
@@ -827,7 +814,6 @@
             android:layout_width="40dp"
             android:layout_height="50dp"
             android:layout_marginStart="16dp"
-            android:onClick="voltar"
             app:layout_constraintBottom_toBottomOf="@+id/lblCidade"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/lblCidade"

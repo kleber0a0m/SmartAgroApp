@@ -9,6 +9,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import br.com.smartagro.clima.Cidade
+import br.com.smartagro.clima.Conexao
+import br.com.smartagro.clima.ConsumirXML
 import br.com.smartagro.databinding.ActivityCadastroBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -142,7 +145,6 @@ class CadastroActivity : AppCompatActivity() {
 
             if (cidadeList.size == 1) {
                 cidadeSelecionada = cidadeList[0]
-                cidadeSelecionada.setUsarLocalizacao(false)
             }
 
             if (cidadeList.size > 1) {
@@ -166,7 +168,6 @@ class CadastroActivity : AppCompatActivity() {
             builder.setTitle("Selecione a cidade")
             builder.setItems(nomesCidades) { dialog, which ->
                 cidadeSelecionada = cidades[which]
-                cidadeSelecionada.setUsarLocalizacao(false)
                 binding.editCidade.setText(cidadeSelecionada.getNome() + " - " + cidadeSelecionada.getUf())
 
             }

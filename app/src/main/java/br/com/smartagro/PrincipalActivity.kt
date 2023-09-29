@@ -36,11 +36,4 @@ class PrincipalActivity : AppCompatActivity() {
             commit()
         }
     }
-
-
-    companion object {
-        fun makeCurrentFragment(fragment: Fragment) {
-            PrincipalActivity.makeCurrentFragment(fragment)
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package br.com.smartagro;
+package br.com.smartagro.clima;
 
 import android.util.Log;
 

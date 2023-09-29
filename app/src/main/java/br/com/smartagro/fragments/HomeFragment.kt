@@ -1,23 +1,23 @@
 package br.com.smartagro.fragments
 
 import ClimaFragment
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import br.com.smartagro.Conexao
-import br.com.smartagro.ConsumirXML
-import br.com.smartagro.LoginActivity
-import br.com.smartagro.Previsao
+import androidx.viewbinding.ViewBindings
+import br.com.smartagro.clima.Conexao
+import br.com.smartagro.clima.ConsumirXML
+import br.com.smartagro.clima.Previsao
 import br.com.smartagro.PrincipalActivity
 import br.com.smartagro.R
-import br.com.smartagro.SiglaDescricao
-import br.com.smartagro.databinding.ActivityMainBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import br.com.smartagro.clima.SiglaDescricao
+import br.com.smartagro.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
@@ -31,20 +31,26 @@ import java.util.Locale
 
 class HomeFragment : Fragment() {
 
-    private lateinit var binding: ActivityMainBinding
     private var cidadeId: String? = null
     private var cidadeNomeUF: String? = null
     private val previsoesList = ArrayList<Previsao>()
+    private lateinit var binding: FragmentHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = ActivityMainBinding.inflate(inflater, container, false)
+        val binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
         val nome = extrairPrimeiroNome(FirebaseAuth.getInstance().currentUser?.displayName)
         binding.txtBemVindo.text = "Olá, $nome!"
+
+        binding.cardClima.setOnClickListener {
+            val climaFragment = ClimaFragment()
+            (activity as PrincipalActivity).makeCurrentFragment(climaFragment)
+            //TODO: Fazer com que o BottomNavigationView fique selecionado na opção "Clima" quando o usuário clicar no cardClima
+        }
 
         previsao()
         buscarPrecoDolar()
@@ -67,25 +73,23 @@ class HomeFragment : Fragment() {
         return "Cafeicultor"
     }
 
-    //Previsão do tempo
     fun previsao(){
         val currentUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
             val userId = currentUser.uid
 
-            // Inicializar o Firestore
             val db = FirebaseFirestore.getInstance()
 
-            // Refira a coleção de cidades do usuário atual
             val cidadesRef: CollectionReference = db.collection("usuarios").document(userId).collection("cidades")
 
-            // Consultar a primeira cidade da coleção
             cidadesRef.limit(1).get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     for (document in task.result!!) {
                         cidadeNomeUF = document.getString("nome") + " - " + document.getString("uf")
                         cidadeId = document.getString("id")
-                        binding.txtCidade.text = cidadeNomeUF
+                        var cidade = ViewBindings.findChildViewById<TextView>(view, R.id.txtCidade)
+                        cidade?.text = cidadeNomeUF
+
                         previsaoDoDia()
                         break
                     }
@@ -114,16 +118,21 @@ class HomeFragment : Fragment() {
         }
 
         override fun onPostExecute(s: String) {
+            var txtTempMax = ViewBindings.findChildViewById<TextView>(view, R.id.txtTempMax)
+            var txtTempMin = ViewBindings.findChildViewById<TextView>(view, R.id.txtTempMin)
+            var txtData = ViewBindings.findChildViewById<TextView>(view, R.id.txtData)
+            var txtPrevisao = ViewBindings.findChildViewById<TextView>(view, R.id.txtPrevisao)
+            var imgTempoHome = ViewBindings.findChildViewById<ImageView>(view, R.id.imgTempoHome2)
             if (isAdded) {
                 previsoesList.clear()
                 previsoesList.addAll(ConsumirXML.getPrevisao(s))
-                binding.txtTempMax.text = previsoesList[0].maxima + "°C"
-                binding.txtTempMin.text = previsoesList[0].minima + "°C"
-                binding.txtData.text = converterData(previsoesList[0].dia)
-                binding.txtPrevisao.text = SiglaDescricao.converterSiglaParaDescricao(previsoesList[0].tempo)
+                txtTempMax?.text = previsoesList[0].maxima + "°C"
+                txtTempMin?.text = previsoesList[0].minima + "°C"
+                txtData?.text = converterData(previsoesList[0].dia)
+                txtPrevisao?.text = SiglaDescricao.converterSiglaParaDescricao(previsoesList[0].tempo)
 
                 val resourceIdTempoCard = resources.getIdentifier(previsoesList[0].tempo, "drawable", context?.packageName)
-                binding.imgTempoHome.setImageResource(resourceIdTempoCard)
+                imgTempoHome?.setImageResource(resourceIdTempoCard)
             }
         }
     }
@@ -142,7 +151,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun buscarPrecoDolar() {val db = FirebaseFirestore.getInstance()
+    fun buscarPrecoDolar() {
+        val db = FirebaseFirestore.getInstance()
         val usdRef = db.collection("usd_prices")
 
         usdRef
@@ -150,6 +160,7 @@ class HomeFragment : Fragment() {
             .limit(1)
             .get()
             .addOnSuccessListener { documents ->
+                var dolar = ViewBindings.findChildViewById<TextView>(view, R.id.txtDolar)
                 if (!documents.isEmpty) {
                     val latestDocument = documents.documents[0]
                     val latestValue = latestDocument.get("value")
@@ -160,12 +171,13 @@ class HomeFragment : Fragment() {
                         val df = DecimalFormat("#.00")
                         val valorFormatado = df.format(valorDouble)
 
-                        binding.txtDolar.text = valorFormatado
+                        dolar?.text = valorFormatado
+
                     } else {
-                        binding.txtDolar.text = "N/A"
+                        dolar?.text = "N/A"
                     }
                 } else {
-                    binding.txtDolar.text = "N/A"
+                    dolar?.text = "N/A"
                 }
             }
             .addOnFailureListener { exception ->
@@ -183,6 +195,7 @@ class HomeFragment : Fragment() {
             .limit(1)
             .get()
             .addOnSuccessListener { documents ->
+                var b3 = ViewBindings.findChildViewById<TextView>(view, R.id.txtValorB3)
                 if (!documents.isEmpty) {
                     val latestDocument = documents.documents[0]
                     val latestValue = latestDocument.get("value")
@@ -193,12 +206,12 @@ class HomeFragment : Fragment() {
                         val df = DecimalFormat("#.00")
                         val valorFormatado = df.format(valorDouble)
 
-                        binding.txtValorB3.text = "$"+valorFormatado
+                        b3?.text = valorFormatado
                     } else {
-                        binding.txtValorB3.text = "N/A"
+                        b3?.text = "N/A"
                     }
                 } else {
-                    binding.txtValorB3.text = "N/A"
+                    b3?.text = "N/A"
                 }
             }
             .addOnFailureListener { exception ->
@@ -216,6 +229,7 @@ class HomeFragment : Fragment() {
             .limit(1)
             .get()
             .addOnSuccessListener { documents ->
+                var cepea = ViewBindings.findChildViewById<TextView>(view, R.id.txtValorCEPEA)
                 if (!documents.isEmpty) {
                     val latestDocument = documents.documents[0]
                     val latestValue = latestDocument.get("value")
@@ -226,12 +240,12 @@ class HomeFragment : Fragment() {
                         val df = DecimalFormat("#.00")
                         val valorFormatado = df.format(valorDouble)
 
-                        binding.txtValorCEPEA.text = "R$"+valorFormatado
+                        cepea?.text = "R$"+valorFormatado
                     } else {
-                        binding.txtValorCEPEA.text = "N/A"
+                        cepea?.text = "N/A"
                     }
                 } else {
-                    binding.txtValorCEPEA.text = "N/A"
+                    cepea?.text = "N/A"
                 }
             }
             .addOnFailureListener { exception ->
@@ -242,13 +256,14 @@ class HomeFragment : Fragment() {
     fun buscarPrecoCafeNYSE() {
         val db = FirebaseFirestore.getInstance()
         val nyseRef = db.collection("coffee_prices_rt").document("NYSE")
-        val pricesRef = nyseRef.collection("prices") // Referência à subcoleção "prices" dentro de "NYSE"
+        val pricesRef = nyseRef.collection("prices")
 
         pricesRef
             .orderBy("created", Query.Direction.DESCENDING)
             .limit(1)
             .get()
             .addOnSuccessListener { documents ->
+                var nyse = ViewBindings.findChildViewById<TextView>(view, R.id.txtValorNYSE)
                 if (!documents.isEmpty) {
                     val latestDocument = documents.documents[0]
                     val latestValue = latestDocument.get("value")
@@ -259,17 +274,16 @@ class HomeFragment : Fragment() {
                         val df = DecimalFormat("#.00")
                         val valorFormatado = df.format(valorDouble)
 
-                        binding.txtValorNYSE.text = "$"+valorFormatado
+                        nyse?.text = "$"+valorFormatado
                     } else {
-                        binding.txtValorNYSE.text = "N/A"
+                        nyse?.text = "N/A"
                     }
                 } else {
-                    binding.txtValorNYSE.text = "N/A"
+                    nyse?.text = "N/A"
                 }
             }
             .addOnFailureListener { exception ->
                 Log.e("FirestoreError", "Erro ao buscar preço do café NYSE: $exception")
             }
     }
-
 }

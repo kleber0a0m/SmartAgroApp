@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import br.com.smartagro.Conexao
-import br.com.smartagro.ConsumirXML
-import br.com.smartagro.Previsao
-import br.com.smartagro.PrevisaoTempoActivity
+import br.com.smartagro.clima.Conexao
+import br.com.smartagro.clima.ConsumirXML
+import br.com.smartagro.clima.Previsao
 import br.com.smartagro.R
-import br.com.smartagro.SiglaDescricao
+import br.com.smartagro.clima.SiglaDescricao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
@@ -372,41 +371,11 @@ class ClimaFragment : Fragment() {
                         "📅 Data: " + dataFormatadaString + "\n" +
                         "⛅ Tempo: " + SiglaDescricao.converterSiglaParaDescricao(previsoesList[indexAtual].tempo) + "\n" +
                         "🌡️ Temperatura:  " + "Max: " + previsoesList[indexAtual].maxima + "°C" + " - Min: " + previsoesList[indexAtual].minima + "°C\n" +
-                        "☀️ Índice UV: " + PrevisaoTempoActivity.obterClassificacaoUV(previsoesList[indexAtual].iuv)
+                        "☀️ Índice UV: " + obterClassificacaoUV(previsoesList[indexAtual].iuv)
             )
             startActivity(Intent.createChooser(intent, "Compartilhar"))
         } catch (e: ParseException) {
             e.printStackTrace()
         }
-    }
-
-    fun alterarIndex0(view: View) {
-        indexAtual = 0
-        buscarPrevisao()
-    }
-
-    fun alterarIndex1(view: View) {
-        indexAtual = 1
-        buscarPrevisao()
-    }
-
-    fun alterarIndex2(view: View) {
-        indexAtual = 2
-        buscarPrevisao()
-    }
-
-    fun alterarIndex3(view: View) {
-        indexAtual = 3
-        buscarPrevisao()
-    }
-
-    fun alterarIndex4(view: View) {
-        indexAtual = 4
-        buscarPrevisao()
-    }
-
-    fun alterarIndex5(view: View) {
-        indexAtual = 5
-        buscarPrevisao()
     }
 }

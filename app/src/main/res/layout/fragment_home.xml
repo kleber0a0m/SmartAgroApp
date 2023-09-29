@@ -88,10 +88,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/fundo_clima" />
+                        android:src="@drawable/fundo_clima"
+                        tools:layout_editor_absoluteX="0dp"
+                        tools:layout_editor_absoluteY="-1dp" />
 
                     <ImageView
-                        android:id="@+id/imgTempoHome"
+                        android:id="@+id/imgTempoHome2"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:layout_marginStart="16dp"
@@ -109,9 +111,10 @@
                         android:text="Tempo"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/imgTempoHome"
-                        app:layout_constraintStart_toEndOf="@+id/imgTempoHome"
-                        app:layout_constraintTop_toTopOf="@+id/imgTempoHome" />
+                        app:layout_constraintBottom_toBottomOf="@+id/imgTempoHome2"
+                        app:layout_constraintStart_toEndOf="@+id/imgTempoHome2"
+                        app:layout_constraintTop_toTopOf="@+id/imgTempoHome2"
+                        app:layout_constraintVertical_bias="0.509" />
 
                     <TextView
                         android:id="@+id/txtClima"
