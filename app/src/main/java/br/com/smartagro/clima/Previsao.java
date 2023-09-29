@@ -1,4 +1,4 @@
-package br.com.smartagro;
+package br.com.smartagro.clima;
 
 public class Previsao {
     private String dia;

@@ -1,51 +1,55 @@
-package br.com.smartagro
+package br.com.smartagro.fragments
 
 import android.content.Intent
-import br.com.smartagro.noticias.cafepoint.RssParserCafePoint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import br.com.smartagro.databinding.ActivityNoticiasBinding
+import br.com.smartagro.R
+import br.com.smartagro.databinding.FragmentNoticiasBinding
 import br.com.smartagro.noticias.cafepoint.NewsAdapterCCCMG
+import br.com.smartagro.noticias.cafepoint.NewsAdapterCafePoint
 import br.com.smartagro.noticias.cafepoint.RssParserCCCMG
+import br.com.smartagro.noticias.cafepoint.RssParserCafePoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import br.com.smartagro.noticias.cafepoint.NewsAdapterCafePoint
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
+class NoticiasFragment : Fragment() {
 
-class Noticias : AppCompatActivity() {
-    private lateinit var binding: ActivityNoticiasBinding
+    private lateinit var binding: FragmentNoticiasBinding
     private lateinit var newsAdapterCafePoint: NewsAdapterCafePoint
     private lateinit var newsAdapterCCCMG: NewsAdapterCCCMG
     private lateinit var rssParserCafePoint: RssParserCafePoint
     private lateinit var rssParserCCCMG: RssParserCCCMG
     private var noticiasCarregadas = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityNoticiasBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setupRssFeeds()
-        setupChipGroupRss()
-        setupBottomNavigation(binding.bottomNavigation)
-
-        // TODO: melhorar esse trecho de código para evitar repetição para cada activity
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        setupBottomNavigation(bottomNavigationView)
-        bottomNavigationView.menu.findItem(R.id.nav_news).isChecked = true
-
-        binding.imgVoltar.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+    private fun initializeBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        if (!::binding.isInitialized) {
+            binding = FragmentNoticiasBinding.inflate(inflater, container, false)
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setupRssFeeds()
+        setupChipGroupRss()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        initializeBinding(inflater, container)
+        return binding.root
+    }
+
     private fun setupRssFeeds() {
+        initializeBinding(layoutInflater, null)
         rssParserCafePoint = RssParserCafePoint("https://www.cafepoint.com.br/rss/")
         rssParserCCCMG = RssParserCCCMG("https://cccmg.com.br/category/noticias/feed/")
 
@@ -60,9 +64,9 @@ class Noticias : AppCompatActivity() {
                 newsAdapterCCCMG = NewsAdapterCCCMG(rssItemsCCCMG)
 
                 binding.recyclerView.adapter = newsAdapterCafePoint
-                binding.recyclerView.layoutManager = LinearLayoutManager(this@Noticias)
+                binding.recyclerView.layoutManager = LinearLayoutManager(context)
             } catch (e: Exception) {
-                Toast.makeText(this@Noticias, "Erro ao carregar os feeds RSS", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Erro ao carregar os feeds RSS", Toast.LENGTH_SHORT).show()
             } finally {
                 showLoadingIndicator(false)
                 noticiasCarregadas = true
@@ -72,6 +76,7 @@ class Noticias : AppCompatActivity() {
     }
 
     private fun setupChipGroupRss() {
+        initializeBinding(layoutInflater, null)
         binding.chipGroupRss.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.chipCafePoint -> {
@@ -79,7 +84,7 @@ class Noticias : AppCompatActivity() {
                         binding.recyclerView.adapter = newsAdapterCafePoint
                         newsAdapterCafePoint.notifyDataSetChanged()
                     } else {
-                        Toast.makeText(this@Noticias, "Carregando notícias...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Carregando notícias...", Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.chipCCCMG -> {
@@ -87,7 +92,7 @@ class Noticias : AppCompatActivity() {
                         binding.recyclerView.adapter = newsAdapterCCCMG
                         newsAdapterCCCMG.notifyDataSetChanged()
                     } else {
-                        Toast.makeText(this@Noticias, "Carregando notícias...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Carregando notícias...", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -102,31 +107,4 @@ class Noticias : AppCompatActivity() {
         }
     }
 
-    // TODO: melhorar esse trecho de código para evitar repetição para cada activity
-    protected fun setupBottomNavigation(bottomNavigationView: BottomNavigationView) {
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.nav_news -> {
-                    val intent = Intent(this, Noticias::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                R.id.nav_clima -> {
-                    val intent = Intent(this, PrevisaoTempoActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-
-                else -> false
-            }
-        }
-    }
 }
-
