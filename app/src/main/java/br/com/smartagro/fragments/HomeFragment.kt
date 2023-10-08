@@ -80,7 +80,7 @@ class HomeFragment : Fragment() {
 
             val db = FirebaseFirestore.getInstance()
 
-            val cidadesRef: CollectionReference = db.collection("usuarios").document(userId).collection("cidades")
+            val cidadesRef: CollectionReference = db.collection("usuarios").document(userId).collection("cidade")
 
             cidadesRef.limit(1).get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {

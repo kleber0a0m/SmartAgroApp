@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.Normalizer
+import android.telephony.PhoneNumberFormattingTextWatcher
+import android.view.View
 
 class CadastroActivity : AppCompatActivity() {
 
@@ -35,49 +37,119 @@ class CadastroActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         binding.btnCriarConta.setOnClickListener {
-            val email = binding.editEmail.text.toString()
-            val senha = binding.editSenha.text.toString()
-            val nomeCompleto = binding.editNome.text.toString()
-            val cidade = binding.editCidade.text.toString()
-            val celular = binding.editCelular.text.toString()
-
-            firebaseAuth.createUserWithEmailAndPassword(email, senha)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val user = firebaseAuth.currentUser
-                        val profileUpdates = UserProfileChangeRequest.Builder()
-                            .setDisplayName(nomeCompleto)
-                            .build()
-
-                        user?.updateProfile(profileUpdates)
-                            ?.addOnCompleteListener { profileTask ->
-                                if (profileTask.isSuccessful) {
-                                    // Salve os campos adicionais no Firestore associados ao UID do usuário
-                                    saveUserDataToFirestore(user?.uid, nomeCompleto, cidade, celular)
-
-                                    Toast.makeText(this, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(this, LoginActivity::class.java))
-                                } else {
-                                    Toast.makeText(this, "Erro ao atualizar informações do usuário.", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                    } else {
-                        Toast.makeText(this, "Erro ao cadastrar usuário!", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            binding.txtLogin.setOnClickListener {
-                startActivity(Intent(this, LoginActivity::class.java))
+            if (validarCampos()) {
+                salvar()
+            }else{
+                Toast.makeText(this, "Preencha todos os campos corretamente!", Toast.LENGTH_SHORT).show()
             }
         }
-
         binding.imgBuscarCidade.setOnClickListener {
-            val cidade = binding.editCidade.text.toString()
-            try {
-                val url = "http://servicos.cptec.inpe.br/XML/listaCidades?city=" + removerAcentos(cidade)
-                Tarefa(this).execute(url)
-            } catch (e: Exception) {
-                Log.e("Erro", e.message!!)
+            definirCidade()
+        }
+
+        binding.txtLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        binding.btnCancelar.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        val editCelular = findViewById<EditText>(R.id.editCelular)
+        editCelular.addTextChangedListener(PhoneNumberFormattingTextWatcher("BR"))
+
+    }
+    private fun validarCampos(): Boolean {
+        val nomeCompleto = binding.editNome.text.toString()
+        val email = binding.editEmail.text.toString()
+        val senha = binding.editSenha.text.toString()
+        val celular = binding.editCelular.text.toString().replace(" ", "").replace("-", "")
+        val cidade = binding.editCidade.text.toString()
+
+        val camposComProblemas = mutableListOf<View>()
+
+        if (nomeCompleto.isEmpty()) {
+            binding.editNome.error = "Campo obrigatório"
+            camposComProblemas.add(binding.editNome)
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.editEmail.error = "Digite um email válido"
+            camposComProblemas.add(binding.editEmail)
+        }
+
+        if (senha.isEmpty()) {
+            binding.editSenha.error = "Campo obrigatório"
+            camposComProblemas.add(binding.editSenha)
+        }
+
+        if (senha.length < 6) {
+            binding.editSenha.error = "A senha deve ter pelo menos 6 caracteres"
+            camposComProblemas.add(binding.editSenha)
+        }
+
+
+        if (celular.length < 10 || celular.length > 11) {
+            binding.editCelular.error = "Digite um número de celular válido no formato 99 99999-9999"
+            camposComProblemas.add(binding.editCelular)
+        }
+
+        if (celular.isEmpty()) {
+            binding.editCelular.error = "Campo obrigatório"
+            camposComProblemas.add(binding.editCelular)
+        }
+
+        if (cidadeSelecionada.getId().isEmpty()) {
+            binding.editCidade.error = "Clique na lupa para pesquisar uma cidade válida"
+            camposComProblemas.add(binding.editCidade)
+        }
+
+        if (cidade.isEmpty()) {
+            binding.editCidade.error = "Campo obrigatório"
+            camposComProblemas.add(binding.editCidade)
+        }
+
+        if (camposComProblemas.isNotEmpty()) {
+            camposComProblemas[0].requestFocus()
+            return false
+        }
+
+        return true
+    }
+
+    private fun salvar() {
+        val email = binding.editEmail.text.toString()
+        val senha = binding.editSenha.text.toString()
+        val nomeCompleto = binding.editNome.text.toString()
+        val cidade = binding.editCidade.text.toString()
+        val celular = binding.editCelular.text.toString()
+
+        firebaseAuth.createUserWithEmailAndPassword(email, senha)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = firebaseAuth.currentUser
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setDisplayName(nomeCompleto)
+                        .build()
+
+                    user?.updateProfile(profileUpdates)
+                        ?.addOnCompleteListener { profileTask ->
+                            if (profileTask.isSuccessful) {
+                                // Salve os campos adicionais no Firestore associados ao UID do usuário
+                                saveUserDataToFirestore(user?.uid, nomeCompleto, cidade, celular)
+
+                                Toast.makeText(this, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this, LoginActivity::class.java))
+                            } else {
+                                Toast.makeText(this, "Erro ao atualizar informações do usuário.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                } else {
+                    Toast.makeText(this, "Erro ao cadastrar usuário!", Toast.LENGTH_SHORT).show()
+                }
             }
+        binding.txtLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 
@@ -85,8 +157,7 @@ class CadastroActivity : AppCompatActivity() {
         if (userId != null) {
             val userData = hashMapOf(
                 "nomeCompleto" to nomeCompleto,
-                "cidade" to cidade,
-                "celular" to celular
+                "celular" to celular.replace(" ", "").replace("-", "")
             )
             salvarCidadeSelecionadaNoFirestore(cidadeSelecionada)
 
@@ -117,7 +188,7 @@ class CadastroActivity : AppCompatActivity() {
 
             firestore.collection("usuarios")
                 .document(userId)
-                .collection("cidades")
+                .collection("cidade")
                 .document(cidade.getId())
                 .set(cidadeData)
                 .addOnFailureListener { e ->
@@ -127,10 +198,22 @@ class CadastroActivity : AppCompatActivity() {
         }
     }
 
-    fun removerAcentos(texto: String?): String? {
+    fun removerAcentosEAjustaUrl(texto: String?): String? {
         var textoNormalizado = Normalizer.normalize(texto, Normalizer.Form.NFD)
         textoNormalizado = textoNormalizado.replace("[^\\p{ASCII}]".toRegex(), "")
+        textoNormalizado = textoNormalizado.replace(" ", "%20")
         return textoNormalizado
+    }
+
+
+    private fun definirCidade() {
+        val cidade = binding.editCidade.text.toString()
+        try {
+            val url = "http://servicos.cptec.inpe.br/XML/listaCidades?city=" + removerAcentosEAjustaUrl(cidade)
+            Tarefa(this).execute(url)
+        } catch (e: Exception) {
+            Log.e("Erro", e.message!!)
+        }
     }
 
     inner class Tarefa(private val context: Context) : AsyncTask<String, String, String>() {
@@ -143,13 +226,7 @@ class CadastroActivity : AppCompatActivity() {
         override fun onPostExecute(s: String?) {
             cidadeList = ConsumirXML.getCidade(s)
 
-            if (cidadeList.size == 1) {
-                cidadeSelecionada = cidadeList[0]
-            }
-
-            if (cidadeList.size > 1) {
-                exibirPopupSelecaoCidade(cidadeList)
-            }
+            exibirPopupSelecaoCidade(cidadeList)
 
             if (cidadeList.isEmpty()) {
                 val cidade = findViewById<EditText>(R.id.editCidade)
@@ -169,6 +246,7 @@ class CadastroActivity : AppCompatActivity() {
             builder.setItems(nomesCidades) { dialog, which ->
                 cidadeSelecionada = cidades[which]
                 binding.editCidade.setText(cidadeSelecionada.getNome() + " - " + cidadeSelecionada.getUf())
+                binding.editCidade.error = null
 
             }
             builder.show()

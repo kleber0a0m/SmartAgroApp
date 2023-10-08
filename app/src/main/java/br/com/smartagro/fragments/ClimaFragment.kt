@@ -55,11 +55,11 @@ class ClimaFragment : Fragment() {
             val db = FirebaseFirestore.getInstance()
 
             // Referenciar a coleção de cidades do usuário atual
-            val cidadesRef: CollectionReference = db.collection("usuarios").document(userId)
-                .collection("cidades")
+            val cidadeRef: CollectionReference = db.collection("usuarios").document(userId)
+                .collection("cidade")
 
             // Consultar a primeira cidade da coleção
-            cidadesRef.limit(1).get()
+            cidadeRef.limit(1).get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         for (document: QueryDocumentSnapshot in task.result!!) {
