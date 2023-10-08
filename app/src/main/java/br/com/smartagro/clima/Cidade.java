@@ -7,6 +7,12 @@ public class Cidade implements Serializable {
     private String uf;
     private String id;
 
+    public Cidade() {
+        setId("");
+        setNome("");
+        setUf("");
+    }
+
     public String getNome() {
         return nome;
     }

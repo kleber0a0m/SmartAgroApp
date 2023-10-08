@@ -1,8 +1,11 @@
 package br.com.smartagro
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import br.com.smartagro.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -45,12 +48,51 @@ class LoginActivity : AppCompatActivity() {
                 }
             } else {
                 Toast.makeText(this, "Campos vazios não são permitidos.", Toast.LENGTH_LONG).show()
+                validarEmailSenha()
             }
         }
 
-
-        binding.txtCriarConta.setOnClickListener {
+        binding.btnCriarConta.setOnClickListener {
             startActivity(Intent(this, CadastroActivity::class.java))
         }
+
+        binding.btnTenhoConta.setOnClickListener {
+            binding.cardLogin.visibility = android.view.View.VISIBLE
+        }
+
+        binding.btnClose.setOnClickListener { view ->
+            binding.cardLogin.visibility = View.GONE
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+        }
+
+        binding.txtRecuperarSenha.setOnClickListener {
+            Toast.makeText(this, "Em breve...", Toast.LENGTH_LONG).show() //TODO: Implementar recuperação de senha
+        }
     }
+
+    private fun validarEmailSenha(): Boolean {
+        val email = binding.editEmail.text.toString()
+        val senha = binding.editSenha.text.toString()
+
+        val camposComProblemas = mutableListOf<View>()
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.editEmail.error = "Digite um email válido"
+            camposComProblemas.add(binding.editEmail)
+        }
+
+        if (senha.isEmpty()) {
+            binding.editSenha.error = "Campo obrigatório"
+            camposComProblemas.add(binding.editSenha)
+        }
+
+        if (camposComProblemas.isNotEmpty()) {
+            camposComProblemas[0].requestFocus()
+            return false
+        }
+
+        return true
+    }
+
 }
