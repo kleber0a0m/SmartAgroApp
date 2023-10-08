@@ -10,7 +10,6 @@ Repositório do Aplicativo Android do SmartAgro Café
 | ![image](https://github.com/emerson-prof-carvalho/SmartAgroCafeApp/assets/70644405/fd064002-1909-4b7f-b9b9-977dc9418262) | ![image](https://github.com/emerson-prof-carvalho/SmartAgroCafeApp/assets/70644405/aa44e7e8-117f-4125-9ffc-849c88d58365) | ![image](https://github.com/emerson-prof-carvalho/SmartAgroCafeApp/assets/70644405/36eb2538-b044-4803-b965-65df0eb41936) | ![image](https://github.com/emerson-prof-carvalho/SmartAgroCafeApp/assets/70644405/7377fc54-2af8-487a-8b8f-baa5f638d0b8) | ![image](https://github.com/emerson-prof-carvalho/SmartAgroCafeApp/assets/70644405/27b6c079-daaa-49d3-8ee6-9041656294ca) | ![image](https://github.com/emerson-prof-carvalho/SmartAgroCafeApp/assets/70644405/e9b0a495-ee62-48d8-9399-b98640afc1fe)
 
 - último commit desta versão: [07/10/2023](https://github.com/emerson-prof-carvalho/SmartAgroCafeApp/commit/cb955ba30df1259a5eef09727b67d88a03508c06)
-- [Download APK]()
 #### 12/09/2023
 | 1 | 2 | 3 | 4 | 5 |
 | --- | --- | --- | --- | --- |
