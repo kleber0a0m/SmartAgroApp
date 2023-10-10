@@ -18,6 +18,7 @@ import br.com.smartagro.PrincipalActivity
 import br.com.smartagro.R
 import br.com.smartagro.clima.SiglaDescricao
 import br.com.smartagro.databinding.FragmentHomeBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
@@ -49,7 +50,10 @@ class HomeFragment : Fragment() {
         binding.cardClima.setOnClickListener {
             val climaFragment = ClimaFragment()
             (activity as PrincipalActivity).makeCurrentFragment(climaFragment)
-            //TODO: Fazer com que o BottomNavigationView fique selecionado na opção "Clima" quando o usuário clicar no cardClima
+
+            val activity = requireActivity() as PrincipalActivity
+            val bottomNavigationView = activity.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+            bottomNavigationView.selectedItemId = R.id.nav_clima
         }
 
         previsao()
