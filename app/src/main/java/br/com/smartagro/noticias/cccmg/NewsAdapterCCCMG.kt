@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +12,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
+import br.com.smartagro.NewsItemClickListener
 import br.com.smartagro.R
 import br.com.smartagro.noticias.RssItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class NewsAdapterCCCMG(private var newsList: List<RssItem>) :
+class NewsAdapterCCCMG(
+    private var newsList: List<RssItem>,
+    private val newsItemClickListener: NewsItemClickListener
+) :
     RecyclerView.Adapter<NewsAdapterCCCMG.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -43,18 +48,9 @@ class NewsAdapterCCCMG(private var newsList: List<RssItem>) :
         holder.txtDescricao.text =  HtmlCompat.fromHtml(newsItem.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         holder.itemView.setOnClickListener {
-            val url = newsItem.link
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            val context = holder.itemView.context
-
-            try {
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                Toast.makeText(
-                    context,
-                    "Nenhum navegador compatível encontrado",
-                    Toast.LENGTH_SHORT
-                ).show()
+            holder.itemView.setOnClickListener {
+                val url = newsItem.link
+                newsItemClickListener.onNewsItemClick(url)
             }
         }
     }

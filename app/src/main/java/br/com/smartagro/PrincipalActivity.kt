@@ -4,18 +4,21 @@ import ClimaFragment
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import br.com.smartagro.fragments.ConfiguracaoFragment
 import br.com.smartagro.fragments.HomeFragment
+import br.com.smartagro.fragments.LerNoticiaFragment
 import br.com.smartagro.fragments.NoticiasFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
-class PrincipalActivity : AppCompatActivity() {
+class PrincipalActivity : AppCompatActivity(), NewsItemClickListener  {
     private val homeFragment = HomeFragment()
     private val noticiasFragment = NoticiasFragment()
     private val climaFragment = ClimaFragment()
     private val configFragment = ConfiguracaoFragment()
+    private val lerNoticiaFragment = LerNoticiaFragment()
 
 
     private val auth = FirebaseAuth.getInstance()
@@ -50,5 +53,13 @@ class PrincipalActivity : AppCompatActivity() {
             replace(R.id.fl_wrapper, fragment)
             commit()
         }
+    }
+
+    override fun onNewsItemClick(url: String) {
+        val bundle = Bundle()
+        bundle.putString("url", url)
+        lerNoticiaFragment.arguments = bundle
+
+        makeCurrentFragment(lerNoticiaFragment)
     }
 }

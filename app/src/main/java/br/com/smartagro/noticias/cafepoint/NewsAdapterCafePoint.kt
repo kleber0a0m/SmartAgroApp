@@ -9,13 +9,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import br.com.smartagro.NewsItemClickListener
 import br.com.smartagro.R
 import br.com.smartagro.noticias.RssItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class NewsAdapterCafePoint(private var newsList: List<RssItem>) :
+class NewsAdapterCafePoint(
+    private var newsList: List<RssItem>,
+    private val newsItemClickListener: NewsItemClickListener
+) :
     RecyclerView.Adapter<NewsAdapterCafePoint.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,14 +45,9 @@ class NewsAdapterCafePoint(private var newsList: List<RssItem>) :
         holder.txtDescricao.text = newsItem.description
 
         holder.itemView.setOnClickListener {
-            val url = "https://www.cafepoint.com.br" + newsItem.link
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            val context = holder.itemView.context
-
-            try {
-                context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                Toast.makeText(context, "Nenhum navegador compatível encontrado", Toast.LENGTH_SHORT).show()
+            holder.itemView.setOnClickListener {
+                val url = "https://www.cafepoint.com.br" + newsItem.link
+                newsItemClickListener.onNewsItemClick(url)
             }
         }
     }

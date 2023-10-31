@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import br.com.smartagro.NewsItemClickListener
 import br.com.smartagro.R
 import br.com.smartagro.databinding.FragmentNoticiasBinding
 import br.com.smartagro.noticias.cafepoint.NewsAdapterCCCMG
@@ -60,10 +61,10 @@ class NoticiasFragment : Fragment() {
                 val rssItemsCCCMG = rssParserCCCMG.fetchRssItems()
                 val rssItemsCafePoint = rssParserCafePoint.fetchRssItems()
 
-                newsAdapterCafePoint = NewsAdapterCafePoint(rssItemsCafePoint)
-                newsAdapterCCCMG = NewsAdapterCCCMG(rssItemsCCCMG)
+                newsAdapterCafePoint = NewsAdapterCafePoint(rssItemsCafePoint, requireActivity() as NewsItemClickListener)
+                newsAdapterCCCMG = NewsAdapterCCCMG(rssItemsCCCMG, requireActivity() as NewsItemClickListener)
 
-                binding.recyclerView.adapter = newsAdapterCafePoint
+                binding.recyclerView.adapter = newsAdapterCCCMG
                 binding.recyclerView.layoutManager = LinearLayoutManager(context)
             } catch (e: Exception) {
                 Toast.makeText(context, "Erro ao carregar os feeds RSS", Toast.LENGTH_SHORT).show()
